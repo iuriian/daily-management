@@ -1,0 +1,48 @@
+name: Android CI
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
+
+      - name: Permissão Gradle
+        run: chmod +x gradlew
+
+      - name: Rodar lint
+        run: ./gradlew lint
+
+      - name: Rodar testes
+        run: ./gradlew test
+
+      - name: Build APK
+        run: ./gradlew assembleRelease
+
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+
+      - name: Deploy Firebase
+        run: |
+          npx firebase-tools appdistribution:distribute app/build/outputs/apk/release/app-release.apk \
+          --app ${{ secrets.APP_ID }} \
+          --groups "testers" \
+          --release-notes "Build automático via CI"
