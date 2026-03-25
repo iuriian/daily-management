@@ -18,13 +18,13 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-
+    needs: lint
     steps:
       - run: ./gradlew test
 
   build:
     runs-on: ubuntu-latest
-
+    needs: test
     steps:
       - run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
       - run: ./gradlew assembleRelease
