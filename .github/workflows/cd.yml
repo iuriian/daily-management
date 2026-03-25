@@ -2,7 +2,7 @@ name: CD
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
 
 jobs:
   build:
@@ -21,20 +21,20 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
-  deploy:
-    name: Firebase deploy
-    runs-on: ubuntu-latest
-    environment: staging
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-android
-      - uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-
-      - run: |
-          npx firebase-tools appdistribution:distribute app/build/outputs/apk/release/app-release.apk \
-          --app ${{ secrets.APP_ID }} \
-          --groups ${{ vars.TEST_GROUP }} \
-          --release-notes "Build automático via CI"
+#  deploy:
+#    name: Firebase deploy
+#    runs-on: ubuntu-latest
+#    environment: staging
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: ./.github/actions/setup-android
+#      - uses: google-github-actions/auth@v2
+#        with:
+#          credentials_json: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+#
+#      - run: |
+#          npx firebase-tools appdistribution:distribute app/build/outputs/apk/release/app-release.apk \
+#          --app ${{ secrets.APP_ID }} \
+#          --groups ${{ vars.TEST_GROUP }} \
+#          --release-notes "Build automático via CI"
