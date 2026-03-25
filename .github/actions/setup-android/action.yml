@@ -1,0 +1,19 @@
+name: Setup Android
+description: Setup android environment
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 17
+
+    - name: Gradle cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.gradle
+        key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
+
+    - run: chmod +x gradlew
+      shell: bash
